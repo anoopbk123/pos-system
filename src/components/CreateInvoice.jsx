@@ -178,7 +178,8 @@ export default function CreateInvoice({
               <div className="text-center">No products added</div>
             )}
           </div>
-          <div className="m-1">
+          {addedProducts&&(
+            <div className="m-1">
             <div className="m-1">
               <label>
                 Total Price:{" "}
@@ -202,6 +203,7 @@ export default function CreateInvoice({
               </label>
             </div>
           </div>
+          )}
           <div className="text-end">
             <Button type="submit" className="mx-3 m-2" variant="danger">
               Save
