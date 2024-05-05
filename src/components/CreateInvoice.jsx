@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Form, Modal, Table } from "react-bootstrap";
 import productData from "../Assets/productData";
+import { toast } from "react-toastify";
 
 export default function CreateInvoice({
   invoices,
@@ -16,7 +17,7 @@ export default function CreateInvoice({
     customerName: "",
     productList: [],
   });
-  const [searchProduct, setSearchProduct] = useState('')
+  const [searchProduct, setSearchProduct] = useState("");
   const [addedProducts, setAddedProducts] = useState([]);
   const handleInvoiceFormDataChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -51,7 +52,9 @@ export default function CreateInvoice({
     }
   };
   const [show, setShow] = useState(false);
-  const handleClose = () => {setShow(false)};
+  const handleClose = () => {
+    setShow(false);
+  };
   const handleShow = () => setShow(true);
   const handleProductSave = () => {
     if (invoiceFormData.productList.length) {
@@ -60,13 +63,17 @@ export default function CreateInvoice({
         invoiceFormData.productList.includes(value.id)
       );
       // console.log(selectedProducts)
-      const totalPrice = selectedProducts.reduce((sum, product) => {
-        return sum + product.price;
-      }, 0).toFixed(2);
+      const totalPrice = selectedProducts
+        .reduce((sum, product) => {
+          return sum + product.price;
+        }, 0)
+        .toFixed(2);
       // console.log(totalPrice)
-      const totalTax = selectedProducts.reduce((tax, product) => {
-        return tax + (product.price / 100) * product.tax;
-      }, 0).toFixed(2);
+      const totalTax = selectedProducts
+        .reduce((tax, product) => {
+          return tax + (product.price / 100) * product.tax;
+        }, 0)
+        .toFixed(2);
       // console.log(totalTax)
       setInvoiceFormData((previousData) => {
         return {
@@ -78,25 +85,22 @@ export default function CreateInvoice({
       });
       setAddedProducts(selectedProducts);
     } else {
-      alert("please select minimum one product");
+      toast.error("please select minimum one product");
     }
   };
   const handleInvoiceSubmit = (e) => {
     e.preventDefault();
-    if(invoiceFormData.customerName && invoiceFormData.productList.length){
-      setInvoices((previousData)=>{
-        return [...previousData, invoiceFormData]
-      })
-      setShowCreateInvoice(false)
-    }
-    else{
-      if(!invoiceFormData.customerName){
-        alert('enter customer name')
+    if (invoiceFormData.customerName && invoiceFormData.productList.length) {
+      setInvoices((previousData) => {
+        return [...previousData, invoiceFormData];
+      });
+      setShowCreateInvoice(false);
+    } else {
+      if (!invoiceFormData.customerName) {
+        toast.error("enter customer name");
+      } else {
+        toast.error("enter products");
       }
-      else{
-        alert('enter products')
-      }
-
     }
   };
   return (
@@ -143,7 +147,10 @@ export default function CreateInvoice({
               Add Product
             </Button>
           </div>
-          <div className="productInputTable overflow-y-scroll" style={{maxHeight:'30vh'}}>
+          <div
+            className="productInputTable overflow-y-scroll"
+            style={{ maxHeight: "30vh" }}
+          >
             {addedProducts.length ? (
               <Table striped hover responsive variant="warning">
                 <thead>
@@ -162,27 +169,36 @@ export default function CreateInvoice({
                       <td>{product.name}</td>
                       <td>{product.price}</td>
                       <td>{product.tax}%</td>
-                      <td>{((product.price/100)*5)+product.price}</td>
+                      <td>{(product.price / 100) * 5 + product.price}</td>
                     </tr>
                   ))}
                 </tbody>
               </Table>
-            ):<div className="text-center">No products added</div>}
+            ) : (
+              <div className="text-center">No products added</div>
+            )}
           </div>
           <div className="m-1">
             <div className="m-1">
               <label>
-                Total Price: <input disabled type="text" value={invoiceFormData.total} />
+                Total Price:{" "}
+                <input disabled type="text" value={invoiceFormData.total} />
               </label>
             </div>
             <div className="m-1">
               <label>
-                Total Tax: <input disabled type="text" value={invoiceFormData.tax} />
+                Total Tax:{" "}
+                <input disabled type="text" value={invoiceFormData.tax} />
               </label>
             </div>
             <div className="m-1">
               <label>
-                Grand Total: <input disabled type="text" value={invoiceFormData.grandTotal} />
+                Grand Total:{" "}
+                <input
+                  disabled
+                  type="text"
+                  value={invoiceFormData.grandTotal}
+                />
               </label>
             </div>
           </div>
@@ -202,7 +218,9 @@ export default function CreateInvoice({
                   type="text"
                   placeholder="Search..."
                   value={searchProduct}
-                  onChange={e=>{setSearchProduct(e.target.value)}}
+                  onChange={(e) => {
+                    setSearchProduct(e.target.value);
+                  }}
                 />
               </div>
               <div className="m-2">
@@ -216,33 +234,34 @@ export default function CreateInvoice({
                     </tr>
                   </thead>
                   <tbody>
-                    {productData.filter(product=>{
-                      if(searchProduct){
-                        const search = searchProduct.toLowerCase()
-                        const productName = product.name.toLowerCase()
-                        return productName.includes(search)
-                      }
-                      else{
-                        return true
-                      }
-                    }).map((product) => (
-                      <tr key={product.id}>
-                        <td>{product.id}</td>
-                        <td>{product.name}</td>
-                        <td>{product.price}</td>
-                        <td>
-                          <Form.Check
-                            onChange={handleInvoiceFormDataChange}
-                            checked={invoiceFormData.productList.includes(
-                              product.id
-                            )}
-                            name="product"
-                            value={product.id}
-                            id={product.id}
-                          />
-                        </td>
-                      </tr>
-                    ))}
+                    {productData
+                      .filter((product) => {
+                        if (searchProduct) {
+                          const search = searchProduct.toLowerCase();
+                          const productName = product.name.toLowerCase();
+                          return productName.includes(search);
+                        } else {
+                          return true;
+                        }
+                      })
+                      .map((product) => (
+                        <tr key={product.id}>
+                          <td>{product.id}</td>
+                          <td>{product.name}</td>
+                          <td>{product.price}</td>
+                          <td>
+                            <Form.Check
+                              onChange={handleInvoiceFormDataChange}
+                              checked={invoiceFormData.productList.includes(
+                                product.id
+                              )}
+                              name="product"
+                              value={product.id}
+                              id={product.id}
+                            />
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </Table>
               </div>
