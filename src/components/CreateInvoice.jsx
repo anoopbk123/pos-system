@@ -178,7 +178,7 @@ export default function CreateInvoice({
               <div className="text-center">No products added</div>
             )}
           </div>
-          {addedProducts&&(
+          {addedProducts.length?(
             <div className="m-1">
             <div className="m-1">
               <label>
@@ -203,7 +203,7 @@ export default function CreateInvoice({
               </label>
             </div>
           </div>
-          )}
+          ):null}
           <div className="text-end">
             <Button type="submit" className="mx-3 m-2" variant="danger">
               Save
